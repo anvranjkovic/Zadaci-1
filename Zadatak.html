@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Napredni HTML Primjeri</title>
+    <style>
+        .tab { display: none; padding: 20px; border: 1px solid #ccc; margin-top: 10px; }
+        .nav-btn { margin: 5px; padding: 10px 15px; background-color: #eee; border: 1px solid #aaa; cursor: pointer; }
+        .nav-btn:hover { background-color: #ddd; }
+        .active { background-color: #ccc; }
+        table { border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #aaa; padding: 8px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+
+<h2>Odaberi primjer</h2>
+<div>
+    <button class="nav-btn" onclick="showTab('tab1')">Registracija</button>
+    <button class="nav-btn" onclick="showTab('tab2')">Mini Košarica</button>
+    <button class="nav-btn" onclick="showTab('tab3')">Država i Grad</button>
+</div>
+
+<!-- REGISTRACIJA -->
+<div class="tab" id="tab1">
+    <h3>Forma za registraciju</h3>
+    <input type="text" id="ime" placeholder="Ime"><br><br>
+    <input type="text" id="prezime" placeholder="Prezime"><br><br>
+    <input type="email" id="email" placeholder="Email"><br><br>
+    <input type="password" id="lozinka" placeholder="Lozinka"><br><br>
+    <button onclick="validirajFormu()">Registriraj se</button>
+    <div id="rezultat1"></div>
+</div>
+
+<!-- MINI KOŠARICA -->
+<div class="tab" id="tab2">
+    <h3>Mini Košarica</h3>
+    <label for="proizvod">Proizvod:</label>
+    <select id="proizvod">
+        <option value="0">Odaberi proizvod</option>
+        <option value="0,99" data-naziv="Kruh">Kruh - 0.99 EUR</option>
+        <option value="1,99" data-naziv="Mlijeko">Mlijeko - 1,99 EUR</option>
+        <option value="10" data-naziv="Sir">Sir - 10 EUR</option>
+<option value="4" data-naziv="Šunka">Šunka - 4 EUR</option>
+<option value="2,99" data-naziv="Jaja">Jaja - 2,99 EUR</option>
+<option value="3,99" data-naziv="Čokolada">Čokolada - 3,99 EUR</option>
+    </select><br><br>
+    Količina: <input type="number" id="kolicina" min="1" value="1"><br><br>
+    <button onclick="dodajUKosaricu()">Dodaj</button>
+    <table id="kosarica">
+        <tr><th>Proizvod</th><th>Količina</th><th>Ukupno</th><th>Akcija</th></tr>
+    </table>
+    <div id="ukupnoIznos"></div>
+</div>
+
+<!-- DRŽAVA I GRAD -->
+<div class="tab" id="tab3">
+    <h3>Odabir države i grada</h3>
+    <select id="drzava" onchange="postaviGradove()">
+        <option value="">Odaberi državu</option>
+        <option value="Hrvatska">Hrvatska</option>
+        <option value="Slovenija">Slovenija</option>
+        <option value="BiH">BiH</option>
+<option value="Srbija">Srbija</option>
+    </select>
+
+    <select id="grad">
+        <option value="">-- Prvo odaberi državu --</option>
+    </select>
+    <button onclick="prikaziOdabir()">Prikaži</button>
+    <div id="rezultat3"></div>
+</div>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab').forEach(tab => tab.style.display = 'none');
+        document.getElementById(tabId).style.display = 'block';
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // Registracija
+    function validirajFormu() {
+        let ime = document.getElementById("ime").value.trim();
+        let prezime = document.getElementById("prezime").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let lozinka = document.getElementById("lozinka").value.trim();
+        let ispis = document.getElementById("rezultat1");
+
+        if (!ime || !prezime || !email || !lozinka) {
+            ispis.innerHTML = "<p class='error'>Sva polja su obavezna!</p>";
+            return;
+        }
+        if (!email.includes("@")) {
+            ispis.innerHTML = "<p class='error'>Email nije ispravan!</p>";
+            return;
+        }
+        if (lozinka.length < 6) {
+            ispis.innerHTML = "<p class='error'>Lozinka mora imati barem 6 znakova!</p>";
+            return;
+        }
+        ispis.innerHTML = `<p class='success'>Dobro došli, ${ime} ${prezime}!</p>`;
+    }
+
+    // Košarica
+    let ukupno = 0;
+    function dodajUKosaricu() {
+        let select = document.getElementById("proizvod");
+        let kolicina = parseInt(document.getElementById("kolicina").value);
+        let cijena = parseInt(select.value);
+        let naziv = select.options[select.selectedIndex].dataset.naziv;
+
+        if (cijena === 0 || kolicina < 1) return;
+
+        let ukupnaCijena = cijena * kolicina;
+        ukupno += ukupnaCijena;
+
+        let red = document.createElement("tr");
+        red.innerHTML = `<td>${naziv}</td><td>${kolicina}</td><td>${ukupnaCijena} kn</td>
+                         <td><button onclick="this.closest('tr').remove(); azurirajUkupno(${ukupnaCijena})">Izbriši</button></td>`;
+        document.getElementById("kosarica").appendChild(red);
+
+        document.getElementById("ukupnoIznos").innerText = "Ukupno: " + ukupno + " kn";
+    }
+
+    function azurirajUkupno(iznos) {
+        ukupno -= iznos;
+        document.getElementById("ukupnoIznos").innerText = "Ukupno: " + ukupno + " kn";
+    }
+
+    // Država i Grad
+    const drzave = {
+        "Hrvatska": ["Zagreb", "Split", "Rijeka"],
+        "Slovenija": ["Ljubljana", "Maribor"],
+        "BiH": ["Sarajevo", "Mostar", "Tuzla"],
+         "Srbija": ["Beograd", "Novi Sad", "Pančevo"]
+    };
+
+    function postaviGradove() {
+        let drzava = document.getElementById("drzava").value;
+        let gradSelect = document.getElementById("grad");
+        gradSelect.innerHTML = "";
+
+        if (!drzava || !drzave[drzava]) return;
+
+        drzave[drzava].forEach(grad => {
+            let opt = document.createElement("option");
+            opt.value = grad;
+            opt.textContent = grad;
+            gradSelect.appendChild(opt);
+        });
+    }
+
+    function prikaziOdabir() {
+        let drzava = document.getElementById("drzava").value;
+        let grad = document.getElementById("grad").value;
+        let ispis = document.getElementById("rezultat3");
+
+        if (!drzava || !grad) {
+            ispis.innerHTML = "<p class='error'>Molimo odaberite i državu i grad.</p>";
+        } else {
+            ispis.innerHTML = `<p class='success'>Odabrali ste grad ${grad} u državi ${drzava}.</p>`;
+        }
+    }
+
+    // Početno otvori prvi tab
+    window.onload = () => showTab('tab1');
+</script>
+
+</body>
+</html>

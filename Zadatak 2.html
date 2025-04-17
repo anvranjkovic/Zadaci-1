@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Višestruki Primjeri</title>
+    <style>
+        .tab {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        button.nav-btn {
+            margin: 5px;
+            padding: 10px;
+            background-color: #eee;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+        button.nav-btn:hover {
+            background-color: #ddd;
+        }
+        .active {
+            background-color: #ccc;
+        }
+        .error { color: red; }
+        .ok { color: green; }
+    </style>
+</head>
+<body>
+
+<h2>Odaberi primjer zadataka:</h2>
+<div>
+    <button class="nav-btn" onclick="showTab('tab1')">Dodavanje sadržaja</button>
+    <button class="nav-btn" onclick="showTab('tab2')">Brojač znakova</button>
+    <button class="nav-btn" onclick="showTab('tab3')">Validacija telefona</button>
+    <button class="nav-btn" onclick="showTab('tab4')">Odabir boje</button>
+    <button class="nav-btn" onclick="showTab('tab5')">Godišnja doba</button>
+</div>
+
+<!-- TAB 1 -->
+<div class="tab" id="tab1">
+    <h3>Dodavanje sadržaja</h3>
+    <button onclick="document.getElementById('output1').innerText = 'Ovo je novi tekst.'">Dodaj tekst</button>
+    <button onclick="document.getElementById('output1').innerHTML = '<>'">Dodaj sliku</button>
+    <div id="output1" style="margin-top: 10px;"></div>
+</div>
+
+<!-- TAB 2 -->
+<div class="tab" id="tab2">
+    <h3>Brojač znakova</h3>
+    Ime: <input type="text" id="ime"><br>
+    Prezime: <input type="text" id="prezime"><br>
+    <button onclick="brojiZnakove()">Izračunaj</button>
+    <div id="ispisZnakova"></div>
+</div>
+
+<!-- TAB 3 -->
+<div class="tab" id="tab3">
+    <h3>Validacija telefona (9 znamenki)</h3>
+    <input type="text" id="telefon" placeholder="Unesi broj telefona">
+    <button onclick="provjeriTelefon()">Provjeri</button>
+    <div id="rezultatTel"></div>
+</div>
+
+<!-- TAB 4 -->
+<div class="tab" id="tab4">
+    <h3>Odaberi boju pozadine</h3>
+    <select onchange="promijeniBoju(this)">
+        <option value="">Odaberi boju</option>
+        <option value="red">Crvena</option>
+        <option value="blue">Plava</option>
+        <option value="green">Zelena</option>
+    </select>
+    <div id="bojaDiv" style="width: 200px; height: 100px; border: 1px solid black; margin-top: 10px;"></div>
+</div>
+
+<!-- TAB 5 -->
+<div class="tab" id="tab5">
+    <h3>Godišnja doba</h3>
+    <input type="radio" name="doba" value="Zima" onclick="prikaziDoba(this)">Zima<br>
+    <input type="radio" name="doba" value="Proljeće" onclick="prikaziDoba(this)">Proljeće<br>
+    <input type="radio" name="doba" value="Ljeto" onclick="prikaziDoba(this)">Ljeto<br>
+    <input type="radio" name="doba" value="Jesen" onclick="prikaziDoba(this)">Jesen<br>
+    <div id="rezultatDoba" style="margin-top: 10px;"></div>
+</div>
+
+<script>
+    function showTab(id) {
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => tab.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function brojiZnakove() {
+        const ime = document.getElementById("ime").value;
+        const prezime = document.getElementById("prezime").value;
+        const ukupno = ime.length + prezime.length;
+        document.getElementById("ispisZnakova").innerText = `Ukupno znakova: ${ukupno}`;
+    }
+
+    function provjeriTelefon() {
+        const broj = document.getElementById("telefon").value;
+        const ispis = document.getElementById("rezultatTel");
+        if (!/^\d{9}$/.test(broj)) {
+            ispis.innerText = "Broj nije ispravan!";
+            ispis.className = "error";
+        } else {
+            ispis.innerText = "Broj je ispravan!";
+            ispis.className = "ok";
+        }
+    }
+
+    function promijeniBoju(select) {
+        document.getElementById("bojaDiv").style.backgroundColor = select.value;
+    }
+
+    function prikaziDoba(radio) {
+        document.getElementById("rezultatDoba").innerText = `Odabrali ste: ${radio.value}`;
+    }
+
+    // Pokreni prvi tab kao početni
+    window.onload = () => showTab('tab1');
+</script>
+
+</body>
+</html>
